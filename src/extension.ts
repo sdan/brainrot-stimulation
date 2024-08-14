@@ -1,7 +1,8 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import * as vscode from "vscode";
-import * as template from "./player.template.html";
+import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
 
 type VideoSource = {
     label: string;
@@ -59,11 +60,10 @@ export function activate(context: vscode.ExtensionContext) {
 	// The command has been defined in the package.json file
     // Now provide the implementation of the command with registerCommand
     // The commandId parameter must match the command field in package.json
-    const disposable = vscode.commands.registerCommand("subway-surfers.overstimulate", () => {
+    const disposable = vscode.commands.registerCommand("brainrot-stim.overstimulate", () => {
 		const configuration = vscode.workspace.getConfiguration();
-		const userVideoSources: VideoSource[] = configuration.get("subway-surfers.customSources") || [];
-		const invidiousInstance: string = configuration.get("subway-surfers.invidiousInstance") || "vid.puffyan.us";
-		const videoSources = internalVideoSources.concat(userVideoSources);
+		const videoCategory: string = configuration.get("brainrot-stim.videoCategory") || "subwaysurfer";
+		const videoSources = internalVideoSources.filter(source => source.label.toLowerCase() === videoCategory);
         const items: vscode.QuickPickItem[] = videoSources.map((source) => {
             return {
                 label: source.label,
@@ -71,7 +71,7 @@ export function activate(context: vscode.ExtensionContext) {
             };
         });
 
-        vscode.window.showQuickPick(items, { placeHolder: "Choose your overstimulation method" }).then((selection) => {
+        vscode.window.showQuickPick(items, { placeHolder: "Choose your overstimulation method" }).then((selection: vscode.QuickPickItem | undefined) => {
             if (!selection) {
                 return;
             }
@@ -94,8 +94,7 @@ export function activate(context: vscode.ExtensionContext) {
             const html = template
                 .replace(/WIDTH/g, source.width.toString())
                 .replace(/VIDEOS/g, JSON.stringify(source.videos.sort(() => 0.5 - Math.random()))) // Shuffle the videos array
-				.replace(/MUTED/g, source.muted ? "muted" : "")
-				.replace(/INVIDIOUS_INSTANCE/g, JSON.stringify(invidiousInstance))
+                .replace(/MUTED/g, source.muted ? "muted" : "")
                 .trim();
 
             panel.reveal();
