@@ -31,20 +31,42 @@
     <body>
         <div id="video-container">
             <video id="fullscreen-video" autoplay loop muted playsinline>
-                <source src="https://pub-92a65a8b1bf145a79cb323cc0229abd6.r2.dev/down%20copy.mp4" type="video/mp4">
+                <source src="" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
         </div>
         <script>
+            const videos = [
+                'subwaysurfer.mp4',
+                'brainrot.mp4',
+                'minecraft.mp4',
+                'sliceit.mp4',
+                'slime.mp4',
+                'stimraw.mp4'
+            ];
+            const baseDomain = 'https://brainrot-vscode-ext.sdan.io/videos/';
+
+            function getRandomVideo() {
+                const randomIndex = Math.floor(Math.random() * videos.length);
+                return baseDomain + videos[randomIndex];
+            }
+
             document.addEventListener('DOMContentLoaded', (event) => {
                 const video = document.getElementById('fullscreen-video');
+                const source = video.querySelector('source');
 
-                // Attempt to start playing as soon as possible
-                video.play().catch(error => {
-                    console.error('Auto-play was prevented:', error);
-                });
+                function playRandomVideo() {
+                    source.src = getRandomVideo();
+                    video.load();
+                    video.play().catch(error => {
+                        console.error('Auto-play was prevented:', error);
+                    });
+                }
 
-                // Ensure video stays in fullscreen mode
+                playRandomVideo();
+
+                video.addEventListener('ended', playRandomVideo);
+
                 function enterFullscreen() {
                     if (video.requestFullscreen) {
                         video.requestFullscreen();
@@ -57,7 +79,6 @@
                     }
                 }
 
-                // Try to enter fullscreen mode on user interaction
                 document.addEventListener('click', enterFullscreen);
                 document.addEventListener('touchstart', enterFullscreen);
             });
