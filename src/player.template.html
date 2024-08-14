@@ -3,70 +3,64 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <style>
-            #player {
-                display: flex;
-                flex-flow: column nowrap;
-                justify-content: center;
-                align-items: center;
+            body, html {
+                margin: 0;
+                padding: 0;
                 width: 100%;
                 height: 100%;
+                overflow: hidden;
+            }
+            #video-container {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: black;
+            }
+            #fullscreen-video {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
             }
         </style>
-        <script src="https://www.youtube.com/iframe_api"></script>
-        <script>
-            const videos = [
-                'zZ7AimPACzc', // Subway Surfers
-                'fXCUaRE-5Rc', // Subway Surfers
-                'vXc0Jmn-frw', // Slice It
-                'n_Dv4JMiwK8', // Minecraft
-                '3xWJ0FSgJVE'  // Stim compilation
-            ];
-            let current = 0;
-            let player;
-
-            function onYouTubeIframeAPIReady() {
-                player = new YT.Player('player', {
-                    height: 'HEIGHT',
-                    width: 'WIDTH',
-                    videoId: videos[current],
-                    playerVars: {
-                        'autoplay': 1,
-                        'controls': 1,
-                        'start': 60
-                    },
-                    events: {
-                        'onReady': onPlayerReady,
-                        'onStateChange': onPlayerStateChange,
-                        'onError': onPlayerError
-                    }
-                });
-            }
-
-            function onPlayerReady(event) {
-                event.target.playVideo();
-            }
-
-            function onPlayerStateChange(event) {
-                if (event.data == YT.PlayerState.ENDED) {
-                    playNext();
-                }
-            }
-
-            function onPlayerError(event) {
-                console.error('Player error:', event.data);
-                playNext();
-            }
-
-            function playNext() {
-                current = (current + 1) % videos.length;
-                player.loadVideoById({
-                    videoId: videos[current],
-                    startSeconds: 60
-                });
-            }
-        </script>
     </head>
     <body>
-        <div id="player"></div>
+        <div id="video-container">
+            <video id="fullscreen-video" autoplay loop muted playsinline>
+                <source src="https://pub-92a65a8b1bf145a79cb323cc0229abd6.r2.dev/down%20copy.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', (event) => {
+                const video = document.getElementById('fullscreen-video');
+
+                // Attempt to start playing as soon as possible
+                video.play().catch(error => {
+                    console.error('Auto-play was prevented:', error);
+                });
+
+                // Ensure video stays in fullscreen mode
+                function enterFullscreen() {
+                    if (video.requestFullscreen) {
+                        video.requestFullscreen();
+                    } else if (video.mozRequestFullScreen) { // Firefox
+                        video.mozRequestFullScreen();
+                    } else if (video.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                        video.webkitRequestFullscreen();
+                    } else if (video.msRequestFullscreen) { // IE/Edge
+                        video.msRequestFullscreen();
+                    }
+                }
+
+                // Try to enter fullscreen mode on user interaction
+                document.addEventListener('click', enterFullscreen);
+                document.addEventListener('touchstart', enterFullscreen);
+            });
+        </script>
     </body>
 </html>
