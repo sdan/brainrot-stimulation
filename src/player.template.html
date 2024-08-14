@@ -24,7 +24,7 @@
         </style>
         <script>
             const videos = VIDEOS;
-			const invidiousInstance = INVIDIOUS_INSTANCE;
+            const cloudflareUrl = "https://your-cloudflare-cdn-url";
 
             let current = 0;
 
@@ -34,7 +34,7 @@
 				
                 const playNext = () => {
                     current = (current + 1) % videos.length;
-                    source.src = new URL(`latest_version?id=${videos[current]}&amp;itag=22#t=60`, `https://${invidiousInstance}`)
+                    source.src = new URL(`latest_version?id=${videos[current]}&amp;itag=22#t=60`, cloudflareUrl);
                     video.load();
                     video.play();
                 };
