@@ -3,7 +3,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <style>
-            #video {
+            #player {
                 display: flex;
                 flex-flow: column nowrap;
                 justify-content: center;
@@ -11,45 +11,62 @@
                 width: 100%;
                 height: 100%;
             }
-
-            button {
-                margin-top: 1em;
-                border: 1px solid black;
-                background-color: black;
-                padding: 1em;
-                border-radius: 20px;
-                color: white;
-                cursor: pointer;
-            }
         </style>
+        <script src="https://www.youtube.com/iframe_api"></script>
         <script>
-            const videos = VIDEOS;
-			const invidiousInstance = INVIDIOUS_INSTANCE;
-
+            const videos = [
+                'zZ7AimPACzc', // Subway Surfers
+                'fXCUaRE-5Rc', // Subway Surfers
+                'vXc0Jmn-frw', // Slice It
+                'n_Dv4JMiwK8', // Minecraft
+                '3xWJ0FSgJVE'  // Stim compilation
+            ];
             let current = 0;
+            let player;
 
-            document.addEventListener("DOMContentLoaded", (event) => {
-                const video = document.getElementById("video-player");
-                const source = document.getElementById("video-source");
-				
-                const playNext = () => {
-                    current = (current + 1) % videos.length;
-                    source.src = new URL(`latest_version?id=${videos[current]}&amp;itag=22#t=60`, `https://${invidiousInstance}`)
-                    video.load();
-                    video.play();
-                };
+            function onYouTubeIframeAPIReady() {
+                player = new YT.Player('player', {
+                    height: 'HEIGHT',
+                    width: 'WIDTH',
+                    videoId: videos[current],
+                    playerVars: {
+                        'autoplay': 1,
+                        'controls': 1,
+                        'start': 60
+                    },
+                    events: {
+                        'onReady': onPlayerReady,
+                        'onStateChange': onPlayerStateChange,
+                        'onError': onPlayerError
+                    }
+                });
+            }
 
-                video.addEventListener("ended", playNext);
-                source.addEventListener("error", playNext);
+            function onPlayerReady(event) {
+                event.target.playVideo();
+            }
+
+            function onPlayerStateChange(event) {
+                if (event.data == YT.PlayerState.ENDED) {
+                    playNext();
+                }
+            }
+
+            function onPlayerError(event) {
+                console.error('Player error:', event.data);
                 playNext();
-            });
+            }
+
+            function playNext() {
+                current = (current + 1) % videos.length;
+                player.loadVideoById({
+                    videoId: videos[current],
+                    startSeconds: 60
+                });
+            }
         </script>
     </head>
     <body>
-        <div id="video">
-            <video id="video-player" autoplay loop muted controls width="WIDTH">
-                <source id="video-source"/>
-            </video>
-        </div>
+        <div id="player"></div>
     </body>
 </html>
