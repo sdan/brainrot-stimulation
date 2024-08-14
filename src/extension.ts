@@ -1,8 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import * as fs from 'fs';
-import * as path from 'path';
 
 type VideoSource = {
     label: string;
@@ -21,85 +19,49 @@ export function activate(context: vscode.ExtensionContext) {
         const configuration = vscode.workspace.getConfiguration();
         const videoCategory: string = configuration.get("brainrot-stim.videoCategory") || "subwaysurfer";
 
-        // Define video sources based on the selected category
-        const videoSources: VideoSource[] = [
-            {
-                label: "Subway Surfers",
-                videos: ["nNGQ7kMhGuQ", "Tqne5J7XdPA", "hs7Z0JUgDeA", "iYgYfHb8gbQ"],
-                width: 300,
-                muted: true,
-            },
-            {
-                label: "Minecraft Parkour",
-                videos: ["intRX7BRA90", "n_Dv4JMiwK8", "GTaXbH6iSFA", "t3SpmH9QQew"],
-                width: 600,
-                muted: true
-            },
-            {
-                label: "CS:GO Surfing",
-                videos: ["Lixl3-jz7k8", "3GWPJtSGm8c", "I-VQuQu2_lc"],
-                width: 600,
-                muted: true
-            },
-            {
-                label: "Satisfying Videos",
-                videos: ["zPhjxwTDdLY", "etp46Aca_UM", "wjQq0nSGS28", "mQGT4BzeUUc"],
-                width: 600,
-                muted: true
-            },
-        ].filter(source => source.label.toLowerCase() === videoCategory.toLowerCase());
+        // Define video configuration based on the selected category
+        const videoConfig: VideoSource = {
+            label: videoCategory,
+            videos: [`https://brainrot-vscode-ext.sdan.io/videos/${videoCategory}.mp4`],
+            width: 600,
+            muted: true
+        };
 
-        if (videoSources.length === 0) {
-            vscode.window.showErrorMessage(`No videos found for category: ${videoCategory}`);
-            return;
-        }
+        const column = {
+            viewColumn: vscode.ViewColumn.Beside,
+            preserveFocus: true,
+        };
 
-        const items: vscode.QuickPickItem[] = videoSources.map((source) => ({
-            label: source.label,
-            alwaysShow: true,
-        }));
+        const options = { enableScripts: true };
 
-        vscode.window.showQuickPick(items, { placeHolder: "Choose your overstimulation method" }).then((selection: vscode.QuickPickItem | undefined) => {
-            if (!selection) {
-                return;
-            }
+        const panel = vscode.window.createWebviewPanel(
+            "brainrot-stim.video",
+            "Skibidi rizz 🤯🫵",
+            column,
+            options
+        );
 
-            const column = {
-                viewColumn: vscode.ViewColumn.Beside,
-                preserveFocus: true,
-            };
+        const html = getVideoPlayerHtml(videoCategory);
 
-            const options = { enableScripts: true };
-
-            const panel = vscode.window.createWebviewPanel(
-                "brainrot-stim.video",
-                "Skibidi rizz 🤯🫵",
-                column,
-                options
-            );
-
-            const source = videoSources.find((source) => source.label === selection.label)!;
-            const html = getVideoPlayerHtml(source);
-
-            panel.reveal();
-            panel.webview.html = html;
-        });
+        panel.reveal();
+        panel.webview.html = html;
     });
 
     context.subscriptions.push(disposable);
 }
 
-function getVideoPlayerHtml(source: VideoSource): string {
-    // Implementation of HTML template generation
-    // This function should return the HTML string for the video player
-    // You may need to implement this based on your specific requirements
+function getVideoPlayerHtml(videoCategory: string): string {
+    const baseDomain = 'https://brainrot-vscode-ext.sdan.io/videos/';
+    const videoFile = `${videoCategory}.mp4`;
+    const videoUrl = `${baseDomain}${videoFile}`;
+
     return `
         <!DOCTYPE html>
         <html lang="en">
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>${source.label}</title>
+            <title>Brainrot Stimulation</title>
             <style>
                 body, html {
                     margin: 0;
@@ -109,32 +71,47 @@ function getVideoPlayerHtml(source: VideoSource): string {
                     overflow: hidden;
                 }
                 #video-container {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
                     width: 100%;
                     height: 100%;
                     display: flex;
                     justify-content: center;
                     align-items: center;
+                    background-color: black;
                 }
-                video {
-                    width: ${source.width}px;
-                    height: auto;
+                #fullscreen-video {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
                 }
             </style>
         </head>
         <body>
             <div id="video-container">
-                <video autoplay loop ${source.muted ? 'muted' : ''} controls>
-                    <source src="${source.videos[Math.floor(Math.random() * source.videos.length)]}" type="video/mp4">
+                <video id="fullscreen-video" autoplay loop muted playsinline>
+                    <source src="${videoUrl}" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
             </div>
             <script>
-                const video = document.querySelector('video');
-                const videos = ${JSON.stringify(source.videos)};
-                video.addEventListener('ended', () => {
-                    video.src = videos[Math.floor(Math.random() * videos.length)];
-                    video.play();
-                });
+                const video = document.getElementById('fullscreen-video');
+
+                function enterFullscreen() {
+                    if (video.requestFullscreen) {
+                        video.requestFullscreen();
+                    } else if (video.mozRequestFullScreen) { // Firefox
+                        video.mozRequestFullScreen();
+                    } else if (video.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                        video.webkitRequestFullscreen();
+                    } else if (video.msRequestFullscreen) { // IE/Edge
+                        video.msRequestFullscreen();
+                    }
+                }
+
+                document.addEventListener('click', enterFullscreen);
+                document.addEventListener('touchstart', enterFullscreen);
             </script>
         </body>
         </html>
