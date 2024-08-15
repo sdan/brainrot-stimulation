@@ -2,59 +2,67 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-type VideoSource = {
-    label: string;
-    videos: string[];
-    width: number;
-    muted?: boolean;
-};
+const videoCategories = [
+    { label: "Subway Surfers", value: "subwaysurfer" },
+    { label: "Brainrot", value: "brainrot" },
+    { label: "Minecraft", value: "minecraft" },
+    { label: "Slice It", value: "sliceit" },
+    { label: "Slime", value: "slime" },
+    { label: "Stim Raw", value: "stimraw" }
+];
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-    // The command has been defined in the package.json file
-    // Now provide the implementation of the command with registerCommand
-    // The commandId parameter must match the command field in package.json
-    const disposable = vscode.commands.registerCommand("brainrot-stim.overstimulate", () => {
-        const configuration = vscode.workspace.getConfiguration();
-        const videoCategory: string = configuration.get("brainrot-stim.videoCategory") || "subwaysurfer";
-
-        // Define video configuration based on the selected category
-        const videoConfig: VideoSource = {
-            label: videoCategory,
-            videos: [`https://brainrot-vscode-ext.sdan.io/videos/${videoCategory}.mp4`],
-            width: 600,
-            muted: true
-        };
-
-        const column = {
-            viewColumn: vscode.ViewColumn.Beside,
-            preserveFocus: true,
-        };
-
-        const options = { enableScripts: true };
-
-        const panel = vscode.window.createWebviewPanel(
-            "brainrot-stim.video",
-            "Skibidi rizz 🤯🫵",
-            column,
-            options
-        );
-
-        const html = getVideoPlayerHtml(videoCategory);
-
-        panel.reveal();
-        panel.webview.html = html;
+    const disposable = vscode.commands.registerCommand("brainrot-stim.overstimulate", async () => {
+        const selectedCategory = await showVideoSelectionMenu();
+        if (selectedCategory) {
+            showVideo(selectedCategory);
+        }
     });
 
     context.subscriptions.push(disposable);
 }
 
-function getVideoPlayerHtml(videoCategory: string): string {
-    const baseDomain = 'https://brainrot-vscode-ext.sdan.io/videos/';
-    const videoFile = `${videoCategory}.mp4`;
-    const videoUrl = `${baseDomain}${videoFile}`;
+async function showVideoSelectionMenu(): Promise<string | undefined> {
+    const configuration = vscode.workspace.getConfiguration();
+    const defaultCategory = configuration.get("brainrot-stim.videoCategory") || "subwaysurfer";
 
+    const selectedItem = await vscode.window.showQuickPick(videoCategories, {
+        placeHolder: "Choose your overstimulation method",
+    });
+
+    if (selectedItem) {
+        configuration.update("brainrot-stim.videoCategory", selectedItem.value, true);
+        return selectedItem.value;
+    }
+
+    return defaultCategory;
+}
+
+function showVideo(videoCategory: string) {
+    const column = {
+        viewColumn: vscode.ViewColumn.Beside,
+        preserveFocus: true,
+    };
+
+    const options = { enableScripts: true };
+
+    const panel = vscode.window.createWebviewPanel(
+        "brainrot-stim.video",
+        "Skibidi rizz 🤯🫵",
+        column,
+        options
+    );
+
+    const videoUrl = `https://brainrot-vscode-ext.sdan.io/videos/${videoCategory}.mp4`;
+    const html = getVideoPlayerHtml(videoUrl);
+
+    panel.reveal();
+    panel.webview.html = html;
+}
+
+function getVideoPlayerHtml(videoUrl: string): string {
     return `
         <!DOCTYPE html>
         <html lang="en">
