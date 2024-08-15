@@ -50,7 +50,7 @@ function showVideo(videoCategory: string) {
 
     const panel = vscode.window.createWebviewPanel(
         "brainrot-stimulation.video",
-        "Skibidi rizz 🤯🫵",
+        "Brainrot stimulation 🤯🫵",
         column,
         options
     );
@@ -63,7 +63,7 @@ function showVideo(videoCategory: string) {
 }
 
 function getVideoUrls(videoCategory: string): string[] {
-    const baseUrl = `https://brainrot-vscode-ext.sdan.io/videos/${videoCategory}`;
+    const baseUrl = `https://brainrot-vscode-ext.sdan.io/videos_15/${videoCategory}`;
     const numParts = 20; // Adjust the number of parts based on your video split
     const videoUrls = [];
 
