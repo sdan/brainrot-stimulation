@@ -3,53 +3,85 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <style>
-            #video {
-                display: flex;
-                flex-flow: column nowrap;
-                justify-content: center;
-                align-items: center;
+            body, html {
+                margin: 0;
+                padding: 0;
                 width: 100%;
                 height: 100%;
+                overflow: hidden;
             }
-
-            button {
-                margin-top: 1em;
-                border: 1px solid black;
+            #video-container {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
                 background-color: black;
-                padding: 1em;
-                border-radius: 20px;
-                color: white;
-                cursor: pointer;
+            }
+            #fullscreen-video {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
             }
         </style>
-        <script>
-            const videos = VIDEOS;
-			const invidiousInstance = INVIDIOUS_INSTANCE;
-
-            let current = 0;
-
-            document.addEventListener("DOMContentLoaded", (event) => {
-                const video = document.getElementById("video-player");
-                const source = document.getElementById("video-source");
-				
-                const playNext = () => {
-                    current = (current + 1) % videos.length;
-                    source.src = new URL(`latest_version?id=${videos[current]}&amp;itag=22#t=60`, `https://${invidiousInstance}`)
-                    video.load();
-                    video.play();
-                };
-
-                video.addEventListener("ended", playNext);
-                source.addEventListener("error", playNext);
-                playNext();
-            });
-        </script>
     </head>
     <body>
-        <div id="video">
-            <video id="video-player" autoplay loop muted controls width="WIDTH">
-                <source id="video-source"/>
+        <div id="video-container">
+            <video id="fullscreen-video" autoplay loop muted playsinline>
+                <source src="" type="video/mp4">
+                Your browser does not support the video tag.
             </video>
         </div>
+        <script>
+            const videos = [
+                'subwaysurfer.mp4',
+                'brainrot.mp4',
+                'minecraft.mp4',
+                'sliceit.mp4',
+                'slime.mp4',
+                'stimraw.mp4'
+            ];
+            const baseDomain = 'https://brainrot-vscode-ext.sdan.io/videos/';
+
+            function getRandomVideo() {
+                const randomIndex = Math.floor(Math.random() * videos.length);
+                return baseDomain + videos[randomIndex];
+            }
+
+            document.addEventListener('DOMContentLoaded', (event) => {
+                const video = document.getElementById('fullscreen-video');
+                const source = video.querySelector('source');
+
+                function playRandomVideo() {
+                    source.src = getRandomVideo();
+                    video.load();
+                    video.play().catch(error => {
+                        console.error('Auto-play was prevented:', error);
+                    });
+                }
+
+                playRandomVideo();
+
+                video.addEventListener('ended', playRandomVideo);
+
+                function enterFullscreen() {
+                    if (video.requestFullscreen) {
+                        video.requestFullscreen();
+                    } else if (video.mozRequestFullScreen) { // Firefox
+                        video.mozRequestFullScreen();
+                    } else if (video.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                        video.webkitRequestFullscreen();
+                    } else if (video.msRequestFullscreen) { // IE/Edge
+                        video.msRequestFullscreen();
+                    }
+                }
+
+                document.addEventListener('click', enterFullscreen);
+                document.addEventListener('touchstart', enterFullscreen);
+            });
+        </script>
     </body>
 </html>
