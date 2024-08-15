@@ -1,69 +1,70 @@
 {
-  "name": "brainrot-stimulation",
-  "displayName": "Brainrot stimulation (Subway Surfers)",
-  "description": "Skibidi rizz 🤯🫵",
-  "version": "0.0.1",
-  "engines": {
-    "vscode": "^1.69.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [],
-  "main": "./dist/extension.js",
-  "repository": "https://github.com/sdan/vscode-subway-surfers",
-  "icon": "icon.png",
-  "publisher": "SuryaDantuluri",
-  "contributes": {
-    "commands": [
-      {
-        "command": "brainrot-stimulation.overstimulate",
-        "title": "Skibidi rizz 🤯🫵"
-      }
+    "name": "brainrot-stimulation",
+    "displayName": "Brainrot stimulation (Subway Surfers)",
+    "description": "Skibidi rizz 🤯🫵",
+    "version": "0.0.1",
+    "engines": {
+      "vscode": "^1.69.0"
+    },
+    "categories": [
+      "Other"
     ],
-    "configuration": {
-      "title": "Brainrot stimulation (Subway surfers)",
-      "properties": {
-        "brainrot-stimulation.videoCategory": {
-          "type": "string",
-          "enum": ["Subway Surfers", "Brainrot", "Minecraft", "Slice It", "Slime", "Maximum Stimulation"],
-          "default": "Subway Surfers",
-          "description": "Select the video category to play"
+    "activationEvents": [],
+    "main": "./dist/extension.js",
+    "repository": "https://github.com/sdan/brainrot-stimulation",
+    "icon": "icon.png",
+    "publisher": "SuryaDantuluri",
+    "contributes": {
+      "commands": [
+        {
+          "command": "brainrot-stimulation.overstimulate",
+          "title": "Skibidi rizz 🤯🫵"
+        }
+      ],
+      "configuration": {
+        "title": "Brainrot stimulation (Subway surfers)",
+        "properties": {
+          "brainrot-stimulation.videoCategory": {
+            "type": "string",
+            "enum": ["Subway Surfers", "Brainrot", "Minecraft", "Slice It", "Slime", "Maximum Stimulation"],
+            "default": "Subway Surfers",
+            "description": "Select the video category to play"
+          }
         }
       }
+    },
+    "pricing": "Free",
+    "scripts": {
+      "vscode:prepublish": "npm run package",
+      "compile": "webpack",
+      "watch": "webpack --watch",
+      "package": "webpack --mode production --devtool hidden-source-map",
+      "compile-tests": "tsc -p . --outDir out",
+      "watch-tests": "tsc -p . -w --outDir out",
+      "pretest": "yarn run compile-tests && yarn run compile && yarn run lint",
+      "lint": "eslint src --ext ts",
+      "test": "node ./out/test/runTest.js"
+    },
+    "devDependencies": {
+      "@types/glob": "^8.1.0",
+      "@types/mocha": "^10.0.1",
+      "@types/node": "16.x",
+      "@types/vscode": "^1.69.0",
+      "@typescript-eslint/eslint-plugin": "^5.53.0",
+      "@typescript-eslint/parser": "^5.53.0",
+      "@vscode/test-electron": "^2.2.3",
+      "eslint": "^8.34.0",
+      "glob": "^8.1.0",
+      "mocha": "^10.2.0",
+      "prettier": "2.8.8",
+      "ts-loader": "^9.4.2",
+      "typescript": "^4.9.5",
+      "webpack": "^5.75.0",
+      "webpack-cli": "^5.0.1"
+    },
+    "author": {
+      "name": "Surya Dantuluri",
+      "url": "https://github.com/sdan/brainrot-stimulation"
     }
-  },
-  "pricing": "Free",
-  "scripts": {
-    "vscode:prepublish": "npm run package",
-    "compile": "webpack",
-    "watch": "webpack --watch",
-    "package": "webpack --mode production --devtool hidden-source-map",
-    "compile-tests": "tsc -p . --outDir out",
-    "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "yarn run compile-tests && yarn run compile && yarn run lint",
-    "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
-  },
-  "devDependencies": {
-    "@types/glob": "^8.1.0",
-    "@types/mocha": "^10.0.1",
-    "@types/node": "16.x",
-    "@types/vscode": "^1.69.0",
-    "@typescript-eslint/eslint-plugin": "^5.53.0",
-    "@typescript-eslint/parser": "^5.53.0",
-    "@vscode/test-electron": "^2.2.3",
-    "eslint": "^8.34.0",
-    "glob": "^8.1.0",
-    "mocha": "^10.2.0",
-    "prettier": "2.8.8",
-    "ts-loader": "^9.4.2",
-    "typescript": "^4.9.5",
-    "webpack": "^5.75.0",
-    "webpack-cli": "^5.0.1"
-  },
-  "author": {
-    "name": "Surya Dantuluri",
-    "url": "https://github.com/sdan/vscode-subway-surfers"
   }
-}
+  
