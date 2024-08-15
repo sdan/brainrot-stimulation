@@ -14,7 +14,7 @@ const videoCategories = [
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-    const disposable = vscode.commands.registerCommand("brainrot-stim.overstimulate", async () => {
+    const disposable = vscode.commands.registerCommand("brainrot-stimulation.overstimulate", async () => {
         const selectedCategory = await showVideoSelectionMenu();
         if (selectedCategory) {
             showVideo(selectedCategory);
@@ -24,16 +24,16 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 }
 
-async function showVideoSelectionMenu(): Promise<string | undefined> {
+async function showVideoSelectionMenu(): Promise<string> {
     const configuration = vscode.workspace.getConfiguration();
-    const defaultCategory = configuration.get("brainrot-stim.videoCategory") || "subwaysurfer";
+    const defaultCategory = configuration.get<string>("brainrot-stimulation.videoCategory") || "subwaysurfer";
 
     const selectedItem = await vscode.window.showQuickPick(videoCategories, {
         placeHolder: "Choose your overstimulation method",
     });
 
     if (selectedItem) {
-        configuration.update("brainrot-stim.videoCategory", selectedItem.value, true);
+        configuration.update("brainrot-stimulation.videoCategory", selectedItem.value, true);
         return selectedItem.value;
     }
 
@@ -49,20 +49,34 @@ function showVideo(videoCategory: string) {
     const options = { enableScripts: true };
 
     const panel = vscode.window.createWebviewPanel(
-        "brainrot-stim.video",
+        "brainrot-stimulation.video",
         "Skibidi rizz 🤯🫵",
         column,
         options
     );
 
-    const videoUrl = `https://brainrot-vscode-ext.sdan.io/videos/${videoCategory}.mp4`;
-    const html = getVideoPlayerHtml(videoUrl);
+    const videoUrls = getVideoUrls(videoCategory);
+    const html = getVideoPlayerHtml(videoUrls);
 
     panel.reveal();
     panel.webview.html = html;
 }
 
-function getVideoPlayerHtml(videoUrl: string): string {
+function getVideoUrls(videoCategory: string): string[] {
+    const baseUrl = `https://brainrot-vscode-ext.sdan.io/videos/${videoCategory}`;
+    const numParts = 20; // Adjust the number of parts based on your video split
+    const videoUrls = [];
+
+    for (let i = 1; i <= numParts; i++) {
+        videoUrls.push(`${baseUrl}_part${i}.mp4`);
+    }
+
+    return videoUrls;
+}
+
+function getVideoPlayerHtml(videoUrls: string[]): string {
+    const videoSources = videoUrls.map(url => `<source src="${url}" type="video/mp4">`).join('\n');
+
     return `
         <!DOCTYPE html>
         <html lang="en">
@@ -98,13 +112,25 @@ function getVideoPlayerHtml(videoUrl: string): string {
         </head>
         <body>
             <div id="video-container">
-                <video id="fullscreen-video" autoplay loop muted playsinline>
-                    <source src="${videoUrl}" type="video/mp4">
+                <video id="fullscreen-video" autoplay muted playsinline>
+                    ${videoSources}
                     Your browser does not support the video tag.
                 </video>
             </div>
             <script>
                 const video = document.getElementById('fullscreen-video');
+                const videoSources = video.getElementsByTagName('source');
+                let currentSource = 0;
+
+                function playNextVideo() {
+                    if (currentSource < videoSources.length - 1) {
+                        currentSource++;
+                        video.src = videoSources[currentSource].src;
+                        video.play();
+                    }
+                }
+
+                video.addEventListener('ended', playNextVideo);
 
                 function enterFullscreen() {
                     if (video.requestFullscreen) {

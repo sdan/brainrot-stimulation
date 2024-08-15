@@ -1,8 +1,8 @@
 {
-  "name": "brainrot-stim",
-  "displayName": "Brainrot stimulation (Subway surfers)",
+  "name": "brainrot-stimulation",
+  "displayName": "Brainrot stimulation (Subway Surfers)",
   "description": "Skibidi rizz 🤯🫵",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "engines": {
     "vscode": "^1.69.0"
   },
@@ -13,21 +13,21 @@
   "main": "./dist/extension.js",
   "repository": "https://github.com/sdan/vscode-subway-surfers",
   "icon": "icon.png",
-  "publisher": "jirkavrba",
+  "publisher": "SuryaDantuluri",
   "contributes": {
     "commands": [
       {
-        "command": "brainrot-stim.overstimulate",
+        "command": "brainrot-stimulation.overstimulate",
         "title": "Skibidi rizz 🤯🫵"
       }
     ],
     "configuration": {
       "title": "Brainrot stimulation (Subway surfers)",
       "properties": {
-        "brainrot-stim.videoCategory": {
+        "brainrot-stimulation.videoCategory": {
           "type": "string",
-          "enum": ["subwaysurfer", "brainrot", "minecraft", "sliceit", "slime", "stimraw"],
-          "default": "subwaysurfer",
+          "enum": ["Subway Surfers", "Brainrot", "Minecraft", "Slice It", "Slime", "Maximum Stimulation"],
+          "default": "Subway Surfers",
           "description": "Select the video category to play"
         }
       }
