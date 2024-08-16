@@ -1,8 +1,8 @@
 {
     "name": "brainrot-stimulation",
-    "displayName": "Brainrot stimulation (Subway Surfers)",
+    "displayName": "Brainrot stimulation",
     "description": "Skibidi rizz 🤯🙅‍♂️🐐💀",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "engines": {
       "vscode": "^1.69.0"
     },
@@ -22,7 +22,7 @@
         }
       ],
       "configuration": {
-        "title": "Brainrot stimulation (Subway surfers)",
+        "title": "Brainrot stimulation",
         "properties": {
           "brainrot-stimulation.videoCategory": {
             "type": "string",
