@@ -34,7 +34,8 @@ jobs:
 
       - name: Publish to VS Code Marketplace
         if: ${{ env.VSCE_TOKEN != '' }}
-        run: npx --yes @vscode/vsce publish -p "$VSCE_TOKEN"
+        continue-on-error: true
+        run: npx --yes @vscode/vsce publish --skip-duplicate -p "$VSCE_TOKEN"
 
       - name: Publish to Open VSX
         if: ${{ env.OPEN_VSX_TOKEN != '' }}
