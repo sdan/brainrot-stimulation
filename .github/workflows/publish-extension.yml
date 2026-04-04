@@ -1,13 +1,22 @@
-name: "Publish VS Code extension"
+name: Publish Extension
+
+"on":
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
+      OPEN_VSX_TOKEN: ${{ secrets.OPEN_VSX_TOKEN }}
     steps:
-      - name: Clone repository
+      - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -17,15 +26,16 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Login to VSCE
-        run: echo "${{ secrets.MARKETPLACE_TOKEN }}" | npx vsce login jirkavrba
+      - name: Build extension bundle
+        run: npm run package
 
-      - name: Build package
-        run: npx vsce package
+      - name: Package VSIX
+        run: npx --yes @vscode/vsce package
 
-      - name: Publish package
-        run: npx vsce publish
-on:
-  push:
-    branches: 
-      - main
+      - name: Publish to VS Code Marketplace
+        if: ${{ env.VSCE_TOKEN != '' }}
+        run: npx --yes @vscode/vsce publish -p "$VSCE_TOKEN"
+
+      - name: Publish to Open VSX
+        if: ${{ env.OPEN_VSX_TOKEN != '' }}
+        run: npx --yes ovsx publish *.vsix -p "$OPEN_VSX_TOKEN"
